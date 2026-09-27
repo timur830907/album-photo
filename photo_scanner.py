@@ -39,8 +39,32 @@ def four_point_transform(image, pts):
   return warped
 
 
+def enhance_old_photo(image):
+  """Автоматическая цветокоррекция и улучшение выцветших фото"""
+  # Конвертируем в цветовое пространство LAB
+  lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+  l, a, b = cv2.split(lab)
+
+  # Применяем адаптивное выравнивание гистограммы (CLAHE) для яркости (L-канал)
+  clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
+  cl = clahe.apply(l)
+
+  # Объединяем каналы обратно
+  limg = cv2.merge((cl, a, b))
+  enhanced = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
+
+  # Легкое повышение насыщенности для тусклых цветов
+  hsv = cv2.cvtColor(enhanced, cv2.COLOR_BGR2HSV)
+  h, s, v = cv2.split(hsv)
+  s = cv2.multiply(s, 1.15)  # увеличиваем насыщенность на 15%
+  s = np.clip(s, 0, 255).astype(np.uint8)
+  final_hsv = cv2.merge((h, s, v))
+  result = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+
+  return result
+
+
 def main():
-  # Создаем папку для сохранения сканов, если ее нет
   output_dir = "scanned_photos"
   os.makedirs(output_dir, exist_ok=True)
 
@@ -51,10 +75,10 @@ def main():
 
   img_counter = 0
   print("=" * 50)
-  print("СКАНЕР СТАРЫХ ФОТОГРАФИЙ ЗАПУЩЕН")
+  print("СКАНЕР СТАРЫХ ФОТОГРАФИЙ С ЦВЕТОКОРРЕКЦИЕЙ ЗАПУЩЕН")
   print("• Положите фотографию на контрастный стол.")
   print("• Зеленый контур покажет найденную фотографию.")
-  print("• Нажмите ПРОБЕЛ (SPACE) для захвата и сохранения в JPG.")
+  print("• Нажмите ПРОБЕЛ (SPACE) для захвата, улучшения и сохранения в JPG.")
   print("• Нажмите ESC для выхода.")
   print("=" * 50)
 
@@ -110,10 +134,14 @@ def main():
       break
     elif key == 32:
       if screen_cnt is not None:
+        # 1. Вырезаем и выпрямляем фото
         warped = four_point_transform(frame, screen_cnt.reshape(4, 2))
-        filename = os.path.join(output_dir, f"photo_{img_counter}.jpg")
-        cv2.imwrite(filename, warped, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
-        print(f"[УСПЕХ] Сохранено: {filename}")
+        # 2. Автоматически улучшаем цвета и контраст старого фото
+        processed_photo = enhance_old_photo(warped)
+
+        filename = os.path.join(output_dir, f"restored_photo_{img_counter}.jpg")
+        cv2.imwrite(filename, processed_photo, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
+        print(f"[УСПЕХ] Восстановлено и сохранено: {filename}")
         img_counter += 1
       else:
         print("[ВНИМАНИЕ] Фотография не найдена. Видны ли все 4 угла?")

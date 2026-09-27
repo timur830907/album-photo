@@ -1,19 +1,21 @@
 # 📸 AI/OpenCV Old Photo Scanner
 
-Простая и удобная программа на Python для автоматического сканирования старых бумажных фотографий с помощью веб-камеры или камеры телефона. 
-
-Программа на лету находит границы фотографии, убирает перспективные искажения (даже если вы снимаете под углом) и сохраняет готовый ровный файл в формате **JPEG/JPG**.
-
-## 🚀 Возможности
-- Детекция прямоугольных границ фотографий в реальном времени.
-- Автоматическая коррекция перспективы (трансформация в вид сверху).
-- Сохранение с высоким качеством сжатия JPEG.
+[English](#english) | [Русский](#русский) | [Қазақша](#қазақша)
 
 ---
 
-## 🛠 Установка и запуск
+<a name="english"></a>
+## 🇬🇧 English
 
-1. **Клонируйте репозиторий или скачайте архив:**
+A simple and convenient Python program for automatic real-time scanning of old paper photographs using a webcam or phone camera. The program detects photo boundaries on the fly, corrects perspective distortion (even when shot at an angle), and saves a flat, high-quality **JPEG/JPG** file.
+
+### 🚀 Features
+- Real-time rectangular boundary detection for photos.
+- Automatic perspective correction (top-down warp).
+- High-quality JPEG compression.
+
+### 🛠 Installation & Usage
+1. **Clone the repository or download ZIP:**
    ```bash
-   git clone [https://github.com/ВАШ_АККАУНТ/album-photo.git](https://github.com/ВАШ_АККАУНТ/album-photo.git)
+   git clone [https://github.com/timur830907/album-photo.git](https://github.com/timur830907/album-photo.git)
    cd album-photo
